@@ -30,6 +30,9 @@
 
 // Pins for this example PA1, PA4, PB1, PB12
 
+// My thanks and gratitude to Clive1 from https://my.st.com/public/STe2ecommunities/mcu
+// for sample code and explanations.
+//
 /**************************************************************************************/
 #define NUMS	10
 volatile uint16_t a12[NUMS*2];
@@ -73,13 +76,7 @@ static void ADC_GPIO_Configuration(int cfg) {
 }
 
 
-/**************************************************************************************
- *
- *   DMA_MemoryBaseAddr
- *
- *   DMA_BufferSize
- *
- **************************************************************************************/
+/**************************************************************************************/
 static void ADC12_DMA_Configuration(void) {
 	DMA_InitTypeDef DMA_InitStructure;
 
@@ -103,13 +100,6 @@ static void ADC12_DMA_Configuration(void) {
 	DMA_Init(DMA1_Channel1, &DMA_InitStructure); // ADC1
 }	
 	
-/**************************************************************************************
- *
- *   DMA_MemoryBaseAddr
- *
- *   DMA_BufferSize
- *
- **************************************************************************************/
 static void ADC34_DMA_Configuration(void) {
 	DMA_InitTypeDef DMA_InitStructure;
 
@@ -320,13 +310,7 @@ void ADC_Configuration(int num_channels) {
 	}
 }
 
-/**************************************************************************************
- *
- *   TIM_Period
- *
- *   TIM_Prescaler
- *
- **************************************************************************************/
+/*************************************************************************************/
 void TIM2_Configuration(int cfg) {
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
 	TIM_OCInitTypeDef TIM_OCInitStructure;
@@ -480,17 +464,13 @@ void Acquire_SetChannelsCnt(uint16_t num_channels) {
 }
 
 void Acquire_SetFrequency(uint32_t acq_frequency) {
-	TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
-	
+
 	if( acq_frequency == 0 ) ACQ_Freq = 50;
 	else ACQ_Freq = acq_frequency;
-	
-	TIM_TimeBaseStructure.TIM_Prescaler = 0;
-	TIM_TimeBaseStructure.TIM_Period = (SystemCoreClock / ACQ_Freq) - 1; // Sample Rate, in Hz
-	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
-	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
 
-	TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
+	TIM_DeInit(TIM2);
+	
+	TIM2_Configuration(channels);
 }
 
 uint16_t Acquire_GetSampleLength(void) {

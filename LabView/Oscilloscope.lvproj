@@ -14,7 +14,7 @@
       <Item Name="parse_line.vi" Type="VI" URL="parse_line.vi"/>
       <Item Name="create_XYplots.vi" Type="VI" URL="create_XYplots.vi"/>
       <Item Name="osc_init.vi" Type="VI" URL="osc_init.vi"/>
-      <Item Name="test_read_one_series.vi" Type="VI" URL="test_read_one_series.vi"/>
+      <Item Name="Oscilloscope.vi" Type="VI" URL="Oscilloscope.vi"/>
       <Item Name="Generate Sound.vi" Type="VI" URL="Generate Sound.vi"/>
       <Item Name="retrive_params.vi" Type="VI" URL="retrive_params.vi"/>
       <Item Name="Dependencies" Type="Dependencies">
@@ -81,6 +81,7 @@
          </Item>
          <Item Name="lvsound2.dll" Type="Document" URL="/C/Program Files/National Instruments/LabVIEW 8.5/resource/lvsound2.dll"/>
          <Item Name="lvanlys.dll" Type="Document" URL="/C/Program Files/National Instruments/LabVIEW 8.5/resource/lvanlys.dll"/>
+         <Item Name="set_freq.vi" Type="VI" URL="set_freq.vi"/>
       </Item>
       <Item Name="Build Specifications" Type="Build"/>
    </Item>

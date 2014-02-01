@@ -26,7 +26,7 @@ uint32_t packet_receive=1;
 __IO uint16_t  calibration_value = 0;
 static uint16_t _acq_length = 200;
 static uint32_t _acq_req = 100000;
-static uint8_t	_fcm = 1;
+static uint8_t	_fcm = 0;	// ******************* set to 2 for debug purposes
 static uint8_t	_bin_out = 0;
 static uint8_t 	_echo = 0;
 
@@ -42,6 +42,7 @@ void print_prompt(void);
 #define RECALIBRATE	"CALIB"
 #define VERSION		"VERS"
 #define PARAMETERS	"PAR"
+#define NEW_FRQ		"FRQ"
 #define ASCII_OUT	"ASCII"
 #define BINARY_OUT	"BIN"
 
@@ -55,6 +56,7 @@ typedef enum acq_state {
 	PROCESS_CMD, 
 	TRANSMIT_DATA,
 	SEND_RESPONSE,
+	UPDATE_FRQ,
 } ACQ_State_Type;
 
 typedef enum command { 
@@ -67,7 +69,8 @@ typedef enum command {
 	CMD_VERSION,
 	CMD_PARAMETERS,
 	CMD_ASCII,
-	CMD_BINARY
+	CMD_BINARY,
+	CMD_NEW_FRQ
 } Command_Type;
 
 ACQ_State_Type ACQ_State = UNDEFINE;
@@ -148,7 +151,7 @@ int main(void) {
 	USB_Interrupts_Config();
 	USB_Init();
 
-//	Acquire_Init(200, 1000000, _fcm?1234:12);
+	Acquire_Init(200, 1000000, _fcm?1234:12);
 	STM_EVAL_LEDOn(LED3);
 	printf("Initialized\n");
 
@@ -198,12 +201,17 @@ int main(void) {
 			ACQ_State = TRANSMIT_DATA;
 		break;
 		case 	CALIBRATE:
-			// restart ADC here
-			Acquire_Init(_acq_length, _acq_req, _fcm?1234:12);
+			// full restart ADC here, but not work yet :(
+//			Acquire_Init(_acq_length, _acq_req, _fcm?1234:12);
 			sprintf(str,"OK %d %d %d",\
 				Acquire_GetSampleLength(),
 				Acquire_GetFrequency(),
 				Acquire_GetChannels()==1234?4:2);
+			ACQ_State = SEND_RESPONSE;
+		break;
+		case	UPDATE_FRQ:
+			Acquire_SetFrequency(_acq_req);
+			sprintf(str,"OK %d",Acquire_GetFrequency());
 			ACQ_State = SEND_RESPONSE;
 		break;
 		case 	RETRIVE_CMD:
@@ -233,6 +241,8 @@ int main(void) {
 				Acquire_GetFrequency(),
 				Acquire_GetChannels()==1234?4:2);
 			  ACQ_State = SEND_RESPONSE;
+		  } else if( OscCmd == CMD_NEW_FRQ ) {
+			  ACQ_State = UPDATE_FRQ;
 		  } else {
 			  sprintf(str,"ERR <%s> %d UNKNOWN CMD",cmd_save,OscCmd);
 			  ACQ_State = SEND_RESPONSE;
@@ -372,12 +382,19 @@ Command_Type ParseCommand(char *ptr) {
 			_acq_req = p[1];
 			_fcm = p[2];
 		}
-		printf("parsed %d\n",r);
+		printf("calib %d\n",r);
 		cmd = CMD_CALIBR;
 	} else if(strncasecmp(ptr,VERSION,strlen(VERSION)) == 0 ) {
 		cmd = CMD_VERSION;
 	} else if(strncasecmp(ptr,PARAMETERS,strlen(PARAMETERS)) == 0 ) {
 		cmd = CMD_PARAMETERS;
+	} else if(strncasecmp(ptr,NEW_FRQ,strlen(NEW_FRQ)) == 0 ) {
+		int p[1],r;
+		if( (r=parse_params(ptr+strlen(NEW_FRQ),p,1)) == 1 ) {
+			_acq_req = p[0];
+		}
+		printf("freq %d\n",r);
+		cmd = CMD_NEW_FRQ;
 	}
 	return(cmd);
 }
