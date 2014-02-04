@@ -16,8 +16,8 @@
   *
   *        http://www.st.com/software_license_agreement_liberty_v2
   *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   * See the License for the specific language governing permissions and
   * limitations under the License.
@@ -56,9 +56,8 @@ uint32_t Receive_length;
 * Return         : None.
 *******************************************************************************/
 
-void EP1_IN_Callback (void)
-{
-  packet_sent = 1;
+void EP1_IN_Callback (void) {
+    packet_sent = 1;
 }
 
 /*******************************************************************************
@@ -68,11 +67,10 @@ void EP1_IN_Callback (void)
 * Output         : None.
 * Return         : None.
 *******************************************************************************/
-void EP3_OUT_Callback(void)
-{
-  packet_receive = 1;
-  Receive_length = GetEPRxCount(ENDP3);
-  PMAToUserBufferCopy((unsigned char*)Receive_Buffer, ENDP3_RXADDR, Receive_length);
+void EP3_OUT_Callback(void) {
+    packet_receive = 1;
+    Receive_length = GetEPRxCount(ENDP3);
+    PMAToUserBufferCopy((unsigned char*)Receive_Buffer, ENDP3_RXADDR, Receive_length);
 }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

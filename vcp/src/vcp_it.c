@@ -18,8 +18,8 @@
   *
   *        http://www.st.com/software_license_agreement_liberty_v2
   *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   * See the License for the specific language governing permissions and
   * limitations under the License.
@@ -51,8 +51,7 @@
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void NMI_Handler(void)
-{
+void NMI_Handler(void) {
 }
 
 /*******************************************************************************
@@ -62,12 +61,10 @@ void NMI_Handler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void HardFault_Handler(void)
-{
-  /* Go to infinite loop when Hard Fault exception occurs */
-  while (1)
-  {
-  }
+void HardFault_Handler(void) {
+    /* Go to infinite loop when Hard Fault exception occurs */
+    while (1) {
+    }
 }
 
 /*******************************************************************************
@@ -77,12 +74,10 @@ void HardFault_Handler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void MemManage_Handler(void)
-{
-  /* Go to infinite loop when Memory Manage exception occurs */
-  while (1)
-  {
-  }
+void MemManage_Handler(void) {
+    /* Go to infinite loop when Memory Manage exception occurs */
+    while (1) {
+    }
 }
 
 /*******************************************************************************
@@ -92,12 +87,10 @@ void MemManage_Handler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void BusFault_Handler(void)
-{
-  /* Go to infinite loop when Bus Fault exception occurs */
-  while (1)
-  {
-  }
+void BusFault_Handler(void) {
+    /* Go to infinite loop when Bus Fault exception occurs */
+    while (1) {
+    }
 }
 
 /*******************************************************************************
@@ -107,12 +100,10 @@ void BusFault_Handler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void UsageFault_Handler(void)
-{
-  /* Go to infinite loop when Usage Fault exception occurs */
-  while (1)
-  {
-  }
+void UsageFault_Handler(void) {
+    /* Go to infinite loop when Usage Fault exception occurs */
+    while (1) {
+    }
 }
 
 /*******************************************************************************
@@ -122,8 +113,7 @@ void UsageFault_Handler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void SVC_Handler(void)
-{
+void SVC_Handler(void) {
 }
 
 /*******************************************************************************
@@ -133,8 +123,7 @@ void SVC_Handler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void DebugMon_Handler(void)
-{
+void DebugMon_Handler(void) {
 }
 
 /*******************************************************************************
@@ -144,8 +133,7 @@ void DebugMon_Handler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void PendSV_Handler(void)
-{
+void PendSV_Handler(void) {
 }
 
 /*******************************************************************************
@@ -155,8 +143,7 @@ void PendSV_Handler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void SysTick_Handler(void)
-{
+void SysTick_Handler(void) {
 }
 
 #endif /* VCP_TEST_BUILD */
@@ -175,7 +162,7 @@ void USB_LP_IRQHandler(void)
 void USB_LP_CAN1_RX0_IRQHandler(void)
 #endif
 {
-  USB_Istr();
+    USB_Istr();
 }
 
 /*******************************************************************************
@@ -192,7 +179,7 @@ void USB_FS_WKUP_IRQHandler(void)
 void USBWakeUp_IRQHandler(void)
 #endif
 {
-  EXTI_ClearITPendingBit(EXTI_Line18);
+    EXTI_ClearITPendingBit(EXTI_Line18);
 }
 
 /******************************************************************************/
@@ -219,23 +206,23 @@ extern __IO uint32_t UserButtonPressed;
   * @param  None
   * @retval None
   */
-void EXTI0_IRQHandler(void) { 
-  if ((EXTI_GetITStatus(USER_BUTTON_EXTI_LINE) == SET)&&(STM_EVAL_PBGetState(BUTTON_USER) != RESET))  {
-    /* Delay */
-    for(i=0; i<0x7FFFF; i++);
-    
-    /* Wait for SEL button to be pressed  */
-    while(STM_EVAL_PBGetState(BUTTON_USER) != RESET); 
-    /* Delay */
-    for(i=0; i<0x7FFFF; i++);
-    UserButtonPressed++;
-    
-    if (UserButtonPressed > 1)
-		UserButtonPressed = 0;
-    
-    /* Clear the EXTI line pending bit */
-    EXTI_ClearITPendingBit(USER_BUTTON_EXTI_LINE);
-  }
+void EXTI0_IRQHandler(void) {
+    if ((EXTI_GetITStatus(USER_BUTTON_EXTI_LINE) == SET)&&(STM_EVAL_PBGetState(BUTTON_USER) != RESET))  {
+        /* Delay */
+        for(i=0; i<0x7FFFF; i++);
+
+        /* Wait for SEL button to be pressed  */
+        while(STM_EVAL_PBGetState(BUTTON_USER) != RESET);
+        /* Delay */
+        for(i=0; i<0x7FFFF; i++);
+        UserButtonPressed++;
+
+        if (UserButtonPressed > 1)
+            UserButtonPressed = 0;
+
+        /* Clear the EXTI line pending bit */
+        EXTI_ClearITPendingBit(USER_BUTTON_EXTI_LINE);
+    }
 }
 
 

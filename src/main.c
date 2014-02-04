@@ -82,24 +82,24 @@ Command_Type ParseCommand(char *);
 /* Private functions ---------------------------------------------------------*/
 static void test_vcp_loopback() {
 	int i;
-  while (1) {
-    if (bDeviceState == CONFIGURED) {
-      CDC_Receive_DATA();
-      /*Check to see if we have data yet */
-      if (Receive_length  != 0) {
-        if (packet_sent == 1)
-          CDC_Send_DATA ((unsigned char*)Receive_Buffer,Receive_length);
-		for(i=0;i<Receive_length;i++)
-			printf("%c",Receive_Buffer[i]);
-        Receive_length = 0;
-      }
-    }
-  }
+	while (1) {
+		if (bDeviceState == CONFIGURED) {
+			CDC_Receive_DATA();
+			/*Check to see if we have data yet */
+			if (Receive_length  != 0) {
+				if (packet_sent == 1)
+					CDC_Send_DATA ((unsigned char*)Receive_Buffer,Receive_length);
+				for(i=0;i<Receive_length;i++)
+					printf("%c",Receive_Buffer[i]);
+				Receive_length = 0;
+			}
+		}
+	}
 }
 
 static void test_adc() {
 	int i,b;
-	
+
 	Acquire_Start(); 
 	b = UserButtonPressed;
 	while(1) {
@@ -108,14 +108,14 @@ static void test_adc() {
 		for(i=0;i<_acq_length;i+=2) {
 			if( _fcm ) {
 				printf("%d\n%d\n%d\n%d\n",
-						ADC12DualConvertedValue[i],
-						ADC12DualConvertedValue[i+1],
-						ADC34DualConvertedValue[i],
-						ADC34DualConvertedValue[i+1]);
+					ADC12DualConvertedValue[i],
+					ADC12DualConvertedValue[i+1],
+					ADC34DualConvertedValue[i],
+					ADC34DualConvertedValue[i+1]);
 			} else {
 				printf("%d\n%d\n", 
-						ADC12DualConvertedValue[i],
-						ADC12DualConvertedValue[i+1]);
+					ADC12DualConvertedValue[i],
+					ADC12DualConvertedValue[i+1]);
 			}
 		}
 		while(b==UserButtonPressed);
@@ -160,16 +160,16 @@ int main(void) {
 	/* Turn off LD4 */
 	STM_EVAL_LEDOff(LED4);
 
-//	test_adc();
-//	test_vcp_loopback();
+	//	test_adc();
+	//	test_vcp_loopback();
 	ACQ_State = IDLE;
 	print_prompt();
-  /* Infinite loop */
-  while (1) {
-	char cmd_save[16];
-	switch(ACQ_State) {
+	/* Infinite loop */
+	while (1) {
+		char cmd_save[16];
+		switch(ACQ_State) {
 		case	IDLE:
-		    if( loop_mode == 1 ) {
+			if( loop_mode == 1 ) {
 				ACQ_State = ACQUIRE;
 				if (bDeviceState == CONFIGURED) {
 					CDC_Receive_DATA();
@@ -181,93 +181,93 @@ int main(void) {
 						ACQ_State = IDLE;
 					}
 				}
-		    } else if ( (ptr = read_string()) ) {
+			} else if ( (ptr = read_string()) ) {
 				//printf("got=\'%s\'\n",ptr);
 				strcpy(cmd_save,ptr);
 				cmd_save[strlen(cmd_save)-1] = '\0';
 				OscCmd = ParseCommand(ptr);
 				Receive_length = 0;
 				ACQ_State = PROCESS_CMD;
-		    }
-		break;
+			}
+			break;
 		case 	ACQUIRE:
 			Acquire_Start(); 
 			while(!Acquire_IsDone());
 			ACQ_State = ADC_RETRIVE_DATA;
-		break;
+			break;
 		case 	ADC_RETRIVE_DATA:
 			/* Get ADC1 converted data */
 			/* Compute the voltage */
 			ACQ_State = TRANSMIT_DATA;
-		break;
+			break;
 		case 	CALIBRATE:
 			// full restart ADC here, but not work yet :(
-//			Acquire_Init(_acq_length, _acq_req, _fcm?1234:12);
+			//			Acquire_Init(_acq_length, _acq_req, _fcm?1234:12);
 			sprintf(str,"OK %d %d %d",\
 				Acquire_GetSampleLength(),
 				Acquire_GetFrequency(),
 				Acquire_GetChannels()==1234?4:2);
 			ACQ_State = SEND_RESPONSE;
-		break;
+			break;
 		case	UPDATE_FRQ:
 			Acquire_SetFrequency(_acq_req);
 			sprintf(str,"OK %d",Acquire_GetFrequency());
 			ACQ_State = SEND_RESPONSE;
-		break;
+			break;
 		case 	RETRIVE_CMD:
 			/* unused */
 			ACQ_State = IDLE;
-		break;
+			break;
 		case	PROCESS_CMD:
-		  if( OscCmd == NOP ) {
-			  str[0] = '\0';
-			  ACQ_State = SEND_RESPONSE;			
-		  } else if( OscCmd == CMD_START ) {
-			  ACQ_State = ACQUIRE;
-		  } else if( OscCmd == CMD_LOOP ) {
-			  ACQ_State = ACQUIRE;
-			  loop_mode = 1;
-	      } else if( OscCmd == CMD_STOP ) {
-			  loop_mode = 0;
-			  ACQ_State = IDLE;
-		  } else if( OscCmd == CMD_CALIBR ) {
-			  ACQ_State = CALIBRATE;
-		  } else if( OscCmd == CMD_VERSION ) {
-			  sprintf(str,"VERSION=%d.%d (%s %s)",0,1,__DATE__, __TIME__);
-			  ACQ_State = SEND_RESPONSE;
-		  } else if( OscCmd == CMD_PARAMETERS ) {
-			sprintf(str,"%d %d %d",\
-				Acquire_GetSampleLength(),
-				Acquire_GetFrequency(),
-				Acquire_GetChannels()==1234?4:2);
-			  ACQ_State = SEND_RESPONSE;
-		  } else if( OscCmd == CMD_NEW_FRQ ) {
-			  ACQ_State = UPDATE_FRQ;
-		  } else {
-			  sprintf(str,"ERR <%s> %d UNKNOWN CMD",cmd_save,OscCmd);
-			  ACQ_State = SEND_RESPONSE;
-		  }
-		break;
+			if( OscCmd == NOP ) {
+				str[0] = '\0';
+				ACQ_State = SEND_RESPONSE;			
+			} else if( OscCmd == CMD_START ) {
+				ACQ_State = ACQUIRE;
+			} else if( OscCmd == CMD_LOOP ) {
+				ACQ_State = ACQUIRE;
+				loop_mode = 1;
+			} else if( OscCmd == CMD_STOP ) {
+				loop_mode = 0;
+				ACQ_State = IDLE;
+			} else if( OscCmd == CMD_CALIBR ) {
+				ACQ_State = CALIBRATE;
+			} else if( OscCmd == CMD_VERSION ) {
+				sprintf(str,"VERSION=%d.%d (%s %s)",0,1,__DATE__, __TIME__);
+				ACQ_State = SEND_RESPONSE;
+			} else if( OscCmd == CMD_PARAMETERS ) {
+				sprintf(str,"%d %d %d",\
+					Acquire_GetSampleLength(),
+					Acquire_GetFrequency(),
+					Acquire_GetChannels()==1234?4:2);
+				ACQ_State = SEND_RESPONSE;
+			} else if( OscCmd == CMD_NEW_FRQ ) {
+				ACQ_State = UPDATE_FRQ;
+			} else {
+				sprintf(str,"ERR <%s> %d UNKNOWN CMD",cmd_save,OscCmd);
+				ACQ_State = SEND_RESPONSE;
+			}
+			break;
 		case 	TRANSMIT_DATA:
 			transfer_samples();
 			ACQ_State = IDLE;
-		break;
+			break;
 		case	SEND_RESPONSE:
 			if( str[0] != 0 )
 				send_string(str);
 			print_prompt();
 			ACQ_State = IDLE;
-		break;
+			break;
 		default:
-		break;
+			break;
+		}
 	}
-  }
 } 
 
 void print_prompt(void) {
 	if (bDeviceState == CONFIGURED) {
 		if (packet_sent == 1)
-		CDC_Send_DATA ((uint8_t *)"*",1);
+			CDC_Send_DATA ((uint8_t *)"*",1);
 	}
 }
 
@@ -363,12 +363,12 @@ static int parse_params(char *ptr, int *p, int num) {
 
 Command_Type ParseCommand(char *ptr) {
 	Command_Type cmd = CMD_UNKNOWN;
-	
+
 	printf("cmd=%s\n",ptr);
 
 	if( *ptr == '\r' || *ptr == '\n' )
 		return(NOP);
-		
+
 	if( strncasecmp(ptr,START_ACQ,strlen(START_ACQ)) == 0 ) {
 		cmd = CMD_START;
 	} else if( strncasecmp(ptr,LOOP_ACQ,strlen(LOOP_ACQ)) == 0 ) {
@@ -412,12 +412,12 @@ Command_Type ParseCommand(char *ptr) {
 *******************************************************************************/
 void assert_failed(uint8_t* file, uint32_t line)
 {
-  /* User can add his own implementation to report the file name and line number,
-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+	/* User can add his own implementation to report the file name and line number,
+	ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
 
-  /* Infinite loop */
-  while (1)
-  {}
+	/* Infinite loop */
+	while (1)
+	{}
 }
 #endif
 

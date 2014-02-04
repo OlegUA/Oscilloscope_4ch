@@ -16,8 +16,8 @@
   *
   *        http://www.st.com/software_license_agreement_liberty_v2
   *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   * See the License for the specific language governing permissions and
   * limitations under the License.
@@ -49,15 +49,15 @@ uint32_t packet_receive=1;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 void USART1_Init(void) {
-	GPIO_InitTypeDef GPIO_InitStructure;
-	USART_InitTypeDef USART_InitStructure;
+    GPIO_InitTypeDef GPIO_InitStructure;
+    USART_InitTypeDef USART_InitStructure;
     /* enable usart clock */
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
 
 
     RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
 
- 
+
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_10;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
@@ -68,7 +68,7 @@ void USART1_Init(void) {
     GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_7);
     GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_7);
 
- 
+
     USART_StructInit(&USART_InitStructure);
     USART_InitStructure.USART_BaudRate = 38400;
     USART_Init(USART1, &USART_InitStructure);
@@ -92,31 +92,28 @@ void USART1putc(const char ch) {
 * Return         : None.
 *******************************************************************************/
 int main(void) {
-	int i;
-	Set_System();
-	Set_USBClock();
-	USB_Interrupts_Config();
-	USB_Init();
+    int i;
+    Set_System();
+    Set_USBClock();
+    USB_Interrupts_Config();
+    USB_Init();
 
-	USART1_Init();
-	
-  while (1)
-  {
-    if (bDeviceState == CONFIGURED)
-    {
-      CDC_Receive_DATA();
-      /*Check to see if we have data yet */
-      if (Receive_length  != 0)
-      {
-        if (packet_sent == 1)
-          CDC_Send_DATA ((unsigned char*)Receive_Buffer,Receive_length);
-		for(i=0;i<Receive_length;i++)
-			USART1putc(Receive_Buffer[i]);
-        Receive_length = 0;
-      }
+    USART1_Init();
+
+    while (1) {
+        if (bDeviceState == CONFIGURED) {
+            CDC_Receive_DATA();
+            /*Check to see if we have data yet */
+            if (Receive_length  != 0) {
+                if (packet_sent == 1)
+                    CDC_Send_DATA ((unsigned char*)Receive_Buffer,Receive_length);
+                for(i=0; i<Receive_length; i++)
+                    USART1putc(Receive_Buffer[i]);
+                Receive_length = 0;
+            }
+        }
     }
-  }
-} 
+}
 
 #ifdef USE_FULL_ASSERT
 /*******************************************************************************
@@ -128,14 +125,13 @@ int main(void) {
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void assert_failed(uint8_t* file, uint32_t line)
-{
-  /* User can add his own implementation to report the file name and line number,
-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+void assert_failed(uint8_t* file, uint32_t line) {
+    /* User can add his own implementation to report the file name and line number,
+       ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
 
-  /* Infinite loop */
-  while (1)
-  {}
+    /* Infinite loop */
+    while (1) {
+    }
 }
 #endif
 
